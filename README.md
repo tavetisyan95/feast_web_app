@@ -176,7 +176,7 @@ For incremental materialization, use the box `End date (incremental materializat
 
 In its current implementation, the app has some notable limitations, including:
 
-- After you clone a repository, you cannot pull it again if changes have been made to it. The only way to pull changes is to delete the repo on the web server and clone it from zero.
+- After you clone a repository, you cannot pull changes made after cloning. The only way to pull changes is to delete the repo on the web server and clone it from zero.
 - The API expects timestamps in the format `%Y-%m-%d` (`YYYY-MM-DD`), e.g. `2021-09-01`. Other formats are not supported.
 - Invalid inputs for parameters aren't handled. No error messages are shown in the web browser. The only way to know that something has gone wrong is through terminal logs. But there is one exception - if you don't select any feature views before saving a dataset, you will see `Please select at least one feature view` under the button `Save Dataset`.
 
