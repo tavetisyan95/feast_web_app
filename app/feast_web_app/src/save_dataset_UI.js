@@ -31,7 +31,7 @@ function SaveDatasetUI(props) {
 			<div className="ui_item">
     	        <fieldset className="fieldset">
         	        <br></br>
-					<button id="save_dataset_button" onClick={(event) => {events.saveDataset()}}>Save Dataset</button> 
+					<button id="save_dataset_button" onClick={() => {events.saveDataset()}}>Save Dataset</button> 
                 	<br></br>
                 	<br></br>
                 	<div className="text" id="save_dataset_area">

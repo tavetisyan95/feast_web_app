@@ -21,7 +21,7 @@ function StoreRetrievalUI(props) {
             <div className="ui_item">
                 <fieldset className="fieldset">
                 <br></br>
-				<button id="get_store_button" onClick={(event) => {events.getStore()}}>Get Store</button> 
+				<button id="get_store_button" onClick={() => {events.getStore()}}>Get Store</button> 
                 <br></br>
                <br></br>
                 <div className="text" id="store_response_area">

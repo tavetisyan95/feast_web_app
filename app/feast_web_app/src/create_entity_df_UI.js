@@ -34,7 +34,7 @@ function CreateEntityDFUI(props) {
 						<input id="frequency" type="text" defaultValue="H"></input>
 					</div>
 					<div className="description">
-						<p className="type">Start time</p>						
+						<p>The frequency of the generated timestamps. Defaults to hourly.</p>						
 					</div>
 				</fieldset>
 			</div> 

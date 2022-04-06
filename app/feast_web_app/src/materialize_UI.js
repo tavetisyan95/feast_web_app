@@ -20,7 +20,7 @@ function MaterializeUI(props) {
 						<input id="end_date_materialize" type="text" defaultValue="2021-09-03"></input>
 					</div>
 					<div className="description">						
-						<p>The date range from between which to materialize features.</p>						
+						<p>The date range from which to materialize features.</p>						
 						<p>Expected format for dates is <i>YYYY-MM-DD</i>, e.g. <i>2020-09-12</i></p>						
 					</div>
 				</fieldset>
@@ -30,7 +30,7 @@ function MaterializeUI(props) {
 			<div className="ui_item">
 				<fieldset className="fieldset">
 					<br></br>
-					<button id="materialize_button" onClick={(event) => {events.materialize()}}>Materialize</button> 
+					<button id="materialize_button" onClick={() => {events.materialize()}}>Materialize</button> 
 					<br></br>
 					<br></br>
 					<div className="text" id="materialize_response_area">
@@ -58,7 +58,7 @@ function MaterializeUI(props) {
 			<div className="ui_item">
 				<fieldset className="fieldset">					
 					<br></br>
-					<button id="materialize_incremental_button" onClick={(event) => {events.materializeIncremental()}}>Materialize incremental</button> 
+					<button id="materialize_incremental_button" onClick={() => {events.materializeIncremental()}}>Materialize incremental</button> 
 					<br></br>
 					<br></br>
 					<div className="text" id="materialize_incr_response_area">

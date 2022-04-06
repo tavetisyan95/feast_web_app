@@ -7,7 +7,7 @@ function RepoExplorationUI(props) {
             <div className="ui_item">
                 <fieldset className="fieldset">                    
                     <br></br>
-				    <button id="get_entities_button" onClick={(event) => {events.getEntityList()}}>Get Entity List</button> 
+				    <button id="get_entities_button" onClick={() => {events.getEntityList()}}>Get Entity List</button> 
                     <br></br>
                     <br></br>
                     <div className="text" id="entity_response_area">
@@ -31,7 +31,7 @@ function RepoExplorationUI(props) {
         	<div className="ui_item">
                 <fieldset className="fieldset">
             	    <br></br>
-				    <button id="get_fv_names_button" onClick={(event) => {events.getFeatureViewNames()}}>Get Feature View Names</button> 
+				    <button id="get_fv_names_button" onClick={() => {events.getFeatureViewNames()}}>Get Feature View Names</button> 
     	            <br></br>
                    	<br></br>
                     <div className="text" id="feature_view_response_area">

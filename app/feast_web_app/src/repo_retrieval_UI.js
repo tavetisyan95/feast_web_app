@@ -33,7 +33,7 @@ function RepoRetrievalUI(props) {
             <div className="ui_item">
                 <fieldset className="fieldset">
                     <br></br>
-				    <button id="get_repo_button" onClick={(event) => {events.getRepo()}}>Get Repo</button> 
+				    <button id="get_repo_button" onClick={() => {events.getRepo()}}>Get Repo</button> 
                     <br></br>
                     <br></br>
                     <div className="text" id="repo_response_area">
