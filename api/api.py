@@ -133,9 +133,6 @@ def register_entity_df(
     # Merging the timestamps and entity key DataFrame
     entity_df = timestamps.merge(entity_ids, how="cross")
 
-    print(entity_df.head())
-    print(entity_df.tail())
-
     # Saving the entity DataFrame to the app
     app.entity_df = entity_df
 
@@ -159,11 +156,6 @@ def save_dataset(
         entity_df=app.entity_df,
         features=features_to_get
     )
-
-    print(job.to_df().head())    
-    print(job.to_df().tail())
-    print(job.to_df().info())    
-    print(job.to_df().isna().sum())    
 
     # Storing the dataset locally on the server
     app.store.create_saved_dataset(
