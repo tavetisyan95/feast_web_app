@@ -68,6 +68,10 @@ button {
 	padding: 10px;
 }
 
+.type {
+	font-style: italic;
+}
+
 input {
 	border: none;
 	height: 30px;
