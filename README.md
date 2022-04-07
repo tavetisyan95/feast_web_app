@@ -123,10 +123,10 @@ Next, in the section `ENTITY DATAFRAME CREATION`, the app allows you to register
 
 Here are the things that you can change when registering an entity DataFrame:
 
-- `Timestamp range`. This field accepts two values `Start date` and `End date`. The Python API will feed these values to the function `pandas.date_range` and generate timestamps between them. The default values correspond to the oldest and newest timestamps available in our toy feature repo.
+- `Timestamp range`. This field accepts two values - `Start date` and `End date`. The Python API will feed these values to the function `pandas.date_range` and generate timestamps between them. The default values correspond to the oldest and newest timestamps available in our toy feature repo.
 - `Frequency`. This is the periodicity with which `pandas.date_range` will generate timestamps. The default value is `H` for hourly frequency, meaning that timestamps will be an hour apart. The app can accept [all other time offset aliases](https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-offset-aliases) supported by `pandas.date_range`, but they might not work with some datasets!
-- `Entity Keys`. The entity keys that you want to create an entity DataFrame for. These are the IDs of the unique entities in your dataset. You can enter several entity keys, but make sure to separate them with a comma, like `1001, 1002, 1004`.
-- `Entity Column Name`. This is the column in your data files that the unique IDs are located under. In our toy dataset, `Entity Column Name` is `driver_id`.
+- `Entity keys`. The entity keys that you want to create an entity DataFrame for. These are the IDs of the unique entities in your dataset. You can enter several entity keys, but make sure to separate them with a comma, like `1001, 1002, 1004`.
+- `Entity column name`. This is the column in your data files that the unique IDs are located under. In our toy dataset, `Entity column name` is `driver_id`.
 
 If you are using our toy dataset, you can leave the values unchanged and press `Create Entity DF`. If everything went OK, you will see `Entity DataFrame created!` under the button.
 
@@ -169,7 +169,7 @@ Finally, you can materialize features in the section `FEATURE MATERIAlIZATION`.
 To do standard (non-incremental) materialization, use the box `Materialization interval (standard materialization)`. In this box, you'll be able to select start and end dates for materialization.
 
 
-For incremental materialization, use the box `End date (incremental materialization)`. You can select an end date for the materialization. Note that depending on the end date and the ttl of your feature views, incremental materialization may not be able to fetch any features.
+For incremental materialization, use the box `Materialization interval (incremental materialization)`. You can select an end date for the materialization. Note that depending on the end date and the ttl of your feature views, incremental materialization may not be able to fetch any features.
 
 
 ## LIMITATIONS OF THE APP
