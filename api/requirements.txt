@@ -1,7 +1,6 @@
 fastapi
 feast
 uvicorn
-python-multipart
 pydantic
 GitPython
 numpy
