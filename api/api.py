@@ -57,6 +57,7 @@ def clone_repo(repo_params: GitRepo):
     # Saving the target path for later use
     app.target_path = repo_params.to_path
 
+
 # Endpoint for getting cloned feature store
 @app.post("/get_store")
 def get_store(path: str):       
@@ -65,6 +66,7 @@ def get_store(path: str):
 
     # Saving the repo path for later use
     app.repo_path = path    
+
 
 # Endpoint for getting feature views
 @app.get("/get_feature_views")
@@ -75,24 +77,30 @@ def get_feature_views():
     # Initializing a list for feature view names
     feature_view_names = []
 
-    # Initializing a list for feature names
-    features = {}
-
     # Iterating over feature views
     for feature_view in feature_views:
-        # Adding each feature view name and its feature names to the lists
-        # created earlier
+        # Adding each feature view name and its feature names 
+        # to the lists we created earlier
         feature_view_names.append(feature_view.name)
-        features[feature_view.name] = app.store.get_feature_view(feature_view.name).features
 
     # Returning the feature view names and associated feature names
-    return {"feature_view_names":feature_view_names, "feature_names": features}
+    return {"feature_view_names":feature_view_names}
+
 
 # Endpoint for getting feature names
 @app.get("/get_feature_names")
 def get_feature_names(feature_view_name: str):    
-    # Returning feature names for the request feature view
-    return app.store.get_feature_view(feature_view_name).features
+    # Initializing a list for feature names
+    feature_names = []
+
+    # Iterating over the features under the given feature view
+    # and appending their names to our list
+    for feature in app.store.get_feature_view(feature_view_name).features:
+        feature_names.append(feature._name)
+
+    # Returning the features
+    return {"feature_names": feature_names}
+
 
 # Endpoint for getting entities
 @app.get("/get_entities")
@@ -109,17 +117,15 @@ def get_entities():
         # Appending entity names and descriptions
         # to the lists created earlier
         entity_names.append(entity.name)
-        entity_descriptions.append(entity.description)
+        entity_descriptions.append(entity.description)  
 
-    #return {"entity_names": ["patient_id", "driver_id"], "entity_descriptions": ["patient description", "driver description"]}
     # Returning entity names and their descriptions
     return {"entity_names": entity_names, "entity_descriptions": entity_descriptions}
+    
 
 # Endpoint for registering entity DataFrames
 @app.post("/register_entity_df")
-def register_entity_df(
-    entity_df_params: EntityDF):
-
+def register_entity_df(entity_df_params: EntityDF):
     # Generating timestamps based on provided params
     timestamps = pd.date_range(
         start=entity_df_params.timestamps[0],
@@ -136,11 +142,10 @@ def register_entity_df(
     # Saving the entity DataFrame to the app
     app.entity_df = entity_df
 
+
 # Endpoint for saving datasets
 @app.post("/save_dataset")
-def save_dataset(
-    dataset_info: SavedDatasetInfo): 
-
+def save_dataset(dataset_info: SavedDatasetInfo): 
     # Initializing a list for feature names to retrieve
     features_to_get = []
 
@@ -175,6 +180,7 @@ def materialize(start_date: str, end_date: str):
 
     # Materializing features between given dates
     app.store.materialize(end_date=end_date, start_date=start_date)
+
 
 # Endpoint for incremental materializatioon
 @app.post("/materialize_incremental")

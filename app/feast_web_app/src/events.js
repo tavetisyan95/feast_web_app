@@ -79,9 +79,12 @@ export const events = {
 			entityResponseArea.innerText = "Entities received!";
 			entityListResponseArea.innerText = "";
 			
+			var entityNames = response.data.entity_names;
+			var entityDescriptions = response.data.entity_descriptions;
+
 			// Displaying existing entity names along with their descriptions
-			for (var i = 0; i < response.data.entity_names.length; i++){				
-				entityListResponseArea.innerText += response.data.entity_names[i] + ": " + response.data.entity_descriptions[i] + "\n";
+			for (var i = 0; i < entityNames.length; i++){				
+				entityListResponseArea.innerText += entityNames[i] + ": " + entityDescriptions[i] + "\n";
 		}
 		})
 		.catch(function(error){
@@ -119,15 +122,17 @@ export const events = {
 		.then(function(response) {					
 			// Displaying a success message				
 			featureViewResponseArea.innerText = "Feature views received!";
+			
+			var featureViewNames = response.data.feature_view_names;
 
 			// Iterating over each of the received feature view names
-			for (var i = 0; i < response.data.feature_view_names.length; i++){
+			for (var i = 0; i < featureViewNames.length; i++){
 				// If a feature view name doesn't exist already, add it to
 				// the fields that display feature view names								
-				if (!existingFVs.includes(response.data.feature_view_names[i])){
+				if (!existingFVs.includes(featureViewNames[i])){
 					selectorFeatureView.add(
-						new Option(response.data.feature_view_names[i], 
-							response.data.feature_view_names[i])
+						new Option(featureViewNames[i], 
+							featureViewNames[i])
 					);
 
 				// Creating a line break so that
@@ -138,14 +143,14 @@ export const events = {
 				// Creating a checkbox for the current feature view name
 				var checkbox = document.createElement("input");
 				checkbox.type = "checkbox";
-				checkbox.value = response.data.feature_view_names[i];
+				checkbox.value = featureViewNames[i];
 				checkbox.id = "feature_view_checkbox_" + i;				
 				featureViewListArea.appendChild(checkbox);
 
 				// Creating a label for the checkbox
 				var label = document.createElement("label");
 				label.htmlFor = checkbox.id;
-				label.appendChild(document.createTextNode(response.data.feature_view_names[i]));				
+				label.appendChild(document.createTextNode(featureViewNames[i]));				
 				featureViewListArea.appendChild(label);	
 				}										
 			}
@@ -175,8 +180,12 @@ export const events = {
 		.then(function(response) {
 			// Adding feature names to a string
 			var features = ""
-			for (var i = 0; i < response.data.length; i++){
-				features += response.data[i]._name + "\n";				
+			
+			// Retrieving the feature names from the response
+			var featureNames = response.data.feature_names;
+			
+			for (var i = 0; i < featureNames.length; i++){
+				features += featureNames[i] + "\n";				
 			}
 			
 			// Displaying the feature names
