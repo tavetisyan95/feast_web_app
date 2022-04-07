@@ -43,7 +43,10 @@ function MaterializeUI(props) {
 
 			<div className="ui_item">
 				<fieldset className="fieldset">
-					<legend className="legend">End date (incremental materialization)</legend>										
+					<legend className="legend">Materialization interval (incremental materialization)</legend>										
+					<div className="description">
+						<p className="type">End date</p>						
+					</div>
 					<div className="input">
 						<input id="end_date_materialize_incr" type="text" defaultValue="2021-09-03"></input>
 					</div>
