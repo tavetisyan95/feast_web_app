@@ -14,15 +14,18 @@ import os
 app = FastAPI()
 
 # Defining allowed origins for CORS
-origins = ["http://localhost:3000",
-           "http://localhost:5000"]           
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5000"
+    ]           
 
-# Adding CORS policy to the app
-app.add_middleware(CORSMiddleware,
-allow_origins=origins,
-allow_methods=["*"],
-allow_headers=["*"],
-)
+# Adding CORS policy to the API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    )
 
 
 ### DATA MODELS FOR REQUEST BODIES ###
@@ -32,7 +35,7 @@ class GitRepo(BaseModel):
     repo_url: str
     to_path: str
 
-# Data model fro creating entity DataFrames
+# Data model for creating entity DataFrames
 class EntityDF(BaseModel):
     entity_keys: list[int] 
     entity_name: str 
@@ -40,7 +43,7 @@ class EntityDF(BaseModel):
     frequency: str
 
 # Data model for saving datasets
-class SavedDatasetInfo(BaseModel):
+class SaveDatasetInfo(BaseModel):
     dataset_name: str
     feature_view_names: list[str]
 
@@ -51,14 +54,17 @@ class SavedDatasetInfo(BaseModel):
 @app.post("/clone_repo")
 def clone_repo(repo_params: GitRepo):
     # Cloning the repo to a target path if it doesn't exist already
-    if not os.path.exists("api/git_repos/" + repo_params.to_path):
-        Repo.clone_from(url=repo_params.repo_url, to_path="api/git_repos/" + repo_params.to_path)                    
+    if not os.path.exists(path="api/git_repos/" + repo_params.to_path):
+        Repo.clone_from(
+            url=repo_params.repo_url, 
+            to_path="api/git_repos/" + repo_params.to_path
+            )                    
     
     # Saving the target path for later use
     app.target_path = repo_params.to_path
 
 
-# Endpoint for getting cloned feature store
+# Endpoint for getting the cloned feature store
 @app.post("/get_store")
 def get_store(path: str):       
     # Getting the feature store
@@ -77,14 +83,14 @@ def get_feature_views():
     # Initializing a list for feature view names
     feature_view_names = []
 
-    # Iterating over feature views
+    # Iterating over the feature views
     for feature_view in feature_views:
-        # Adding each feature view name and its feature names 
-        # to the lists we created earlier
+        # Adding each feature view name 
+        # to the list we created earlier
         feature_view_names.append(feature_view.name)
 
-    # Returning the feature view names and associated feature names
-    return {"feature_view_names":feature_view_names}
+    # Returning the feature view names
+    return {"feature_view_names": feature_view_names}
 
 
 # Endpoint for getting feature names
@@ -95,7 +101,7 @@ def get_feature_names(feature_view_name: str):
 
     # Iterating over the features under the given feature view
     # and appending their names to our list
-    for feature in app.store.get_feature_view(feature_view_name).features:
+    for feature in app.store.get_feature_view(name=feature_view_name).features:
         feature_names.append(feature._name)
 
     # Returning the features
@@ -120,24 +126,37 @@ def get_entities():
         entity_descriptions.append(entity.description)  
 
     # Returning entity names and their descriptions
-    return {"entity_names": entity_names, "entity_descriptions": entity_descriptions}
+    return {
+        "entity_names": entity_names, 
+        "entity_descriptions": entity_descriptions
+        }
     
 
 # Endpoint for registering entity DataFrames
 @app.post("/register_entity_df")
 def register_entity_df(entity_df_params: EntityDF):
     # Generating timestamps based on provided params
+    # and converting them to a DataFrame
     timestamps = pd.date_range(
         start=entity_df_params.timestamps[0],
         end=entity_df_params.timestamps[1],
         freq=entity_df_params.frequency
-    ).to_frame(index=False, name="event_timestamp")
+    ).to_frame(
+        index=False, 
+        name="event_timestamp"
+        )
 
     # Creating a DataFrame with entity keys
-    entity_ids = pd.DataFrame(data=entity_df_params.entity_keys, columns=[entity_df_params.entity_name])
+    entity_ids = pd.DataFrame(
+        data=entity_df_params.entity_keys, 
+        columns=[entity_df_params.entity_name]
+        )
 
     # Merging the timestamps and entity key DataFrame
-    entity_df = timestamps.merge(entity_ids, how="cross")
+    entity_df = timestamps.merge(
+        right=entity_ids, 
+        how="cross"
+        )
 
     # Saving the entity DataFrame to the app
     app.entity_df = entity_df
@@ -145,15 +164,15 @@ def register_entity_df(entity_df_params: EntityDF):
 
 # Endpoint for saving datasets
 @app.post("/save_dataset")
-def save_dataset(dataset_info: SavedDatasetInfo): 
+def save_dataset(dataset_info: SaveDatasetInfo): 
     # Initializing a list for feature names to retrieve
     features_to_get = []
 
-    # Iterating over request feature view names
+    # Iterating over requested feature view names
     # and generating feature names in
     # the feature_view_name:feature_name format
     for feature_view in dataset_info.feature_view_names:
-        for feature in app.store.get_feature_view(feature_view).features:
+        for feature in app.store.get_feature_view(name=feature_view).features:
             features_to_get.append(feature_view + ":" + feature._name)
 
     # Retrieving requested features from the feature store   
@@ -175,18 +194,31 @@ def save_dataset(dataset_info: SavedDatasetInfo):
 @app.post("/materialize")
 def materialize(start_date: str, end_date: str):
     # Converting string dates to datetimes
-    end_date = datetime.strptime(end_date, "%Y-%m-%d")
-    start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    end_date = datetime.strptime(
+        end_date, 
+        "%Y-%m-%d"
+        )
+
+    start_date = datetime.strptime(
+        start_date, 
+        "%Y-%m-%d"
+        )
 
     # Materializing features between given dates
-    app.store.materialize(end_date=end_date, start_date=start_date)
+    app.store.materialize(
+        end_date=end_date, 
+        start_date=start_date
+        )
 
 
 # Endpoint for incremental materializatioon
 @app.post("/materialize_incremental")
 def materialize_incremental(end_date: str):
     # Converting string date to datetime
-    end_date = datetime.strptime(end_date, "%Y-%m-%d")
+    end_date = datetime.strptime(
+        end_date, 
+        "%Y-%m-%d"
+        )
 
     # Incrementally materializing features up to end date
     app.store.materialize_incremental(end_date=end_date)
@@ -194,4 +226,8 @@ def materialize_incremental(end_date: str):
 
 # Launching the API
 if __name__ == "__main__":
-    uvicorn.run("api:app", port=5000, reload=False)
+    uvicorn.run(
+        app="api:app", 
+        port=5000, 
+        reload=False
+        )
