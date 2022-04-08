@@ -3,5 +3,4 @@ feast
 uvicorn
 pydantic
 GitPython
-numpy
 pandas
