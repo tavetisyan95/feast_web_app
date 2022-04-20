@@ -78,6 +78,7 @@ def get_store(path: str):
 
     # Updating feature store definitions 
     # to update paths to data sources
+    os.system("feast teardown")
     os.system("feast apply")
 
     # Going back to the original directory
