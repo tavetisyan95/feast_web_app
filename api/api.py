@@ -102,7 +102,7 @@ def get_feature_names(feature_view_name: str):
     # Iterating over the features under the given feature view
     # and appending their names to our list
     for feature in app.store.get_feature_view(name=feature_view_name).features:
-        feature_names.append(feature._name)
+        feature_names.append(feature.name)
 
     # Returning the features
     return {"feature_names": feature_names}
@@ -173,7 +173,7 @@ def save_dataset(dataset_info: SaveDatasetInfo):
     # the feature_view_name:feature_name format
     for feature_view in dataset_info.feature_view_names:
         for feature in app.store.get_feature_view(name=feature_view).features:
-            features_to_get.append(feature_view + ":" + feature._name)
+            features_to_get.append(feature_view + ":" + feature.name)
 
     # Retrieving requested features from the feature store   
     job = app.store.get_historical_features(
