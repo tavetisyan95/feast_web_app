@@ -67,11 +67,21 @@ def clone_repo(repo_params: GitRepo):
 # Endpoint for getting the cloned feature store
 @app.post("/get_store")
 def get_store(path: str):       
-    # Getting the feature store
-    app.store = FeatureStore(repo_path="api/git_repos/" + app.target_path + "/" + path)
+    # Getting the feature store    
+    app.store = FeatureStore(repo_path=os.getcwd() +"/api/git_repos/" + app.target_path + "/" + path)
 
     # Saving the repo path for later use
-    app.repo_path = path    
+    app.repo_path = path
+
+    # Changing the working directory to the path of the feature store    
+    os.chdir(f"api/git_repos/{app.target_path}/{path}")    
+
+    # Updating feature store definitions 
+    # to update paths to data sources
+    os.system("feast apply")
+
+    # Going back to the original directory
+    os.chdir("../../../..")            
 
 
 # Endpoint for getting feature views
@@ -161,6 +171,7 @@ def register_entity_df(entity_df_params: EntityDF):
     # Saving the entity DataFrame to the app
     app.entity_df = entity_df
 
+#ADD HTTPTOOLS, WEBSOCKETS
 
 # Endpoint for saving datasets
 @app.post("/save_dataset")
@@ -179,14 +190,14 @@ def save_dataset(dataset_info: SaveDatasetInfo):
     job = app.store.get_historical_features(
         entity_df=app.entity_df,
         features=features_to_get
-    )
+    )    
 
     # Storing the dataset locally on the server
     app.store.create_saved_dataset(
         from_=job,
         name=dataset_info.dataset_name,
         storage=SavedDatasetFileStorage(
-            f"api/git_repos/{app.target_path}/{app.repo_path}/data/{dataset_info.dataset_name}.parquet")
+            f"{os.getcwd()}/api/git_repos/{app.target_path}/{app.repo_path}/data/{dataset_info.dataset_name}.parquet")
     )
 
 
