@@ -1,5 +1,5 @@
 fastapi
-feast>=0.19.3
+feast>=0.20.0
 uvicorn
 pydantic
 GitPython
