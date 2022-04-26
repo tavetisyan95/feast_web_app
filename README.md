@@ -31,15 +31,13 @@ NOTE: don't put any http or slashes/backslashess in the api_url!
 
 ## Install Dependencies and Start Web Servers
 
-Run the following in terminal:
+To start the application's Docker container, launch Docker Desktop. Then, navigate to the root directory of the application, launch the terminal, and run the following command:
 
-`bash start.sh`
+`docker-compose -f docker-compose.yaml up -d –build`
 
-NOTE: Make sure that ports 3000 and 5000 are publicly available and unused by other processes. If not, either free them up or use other ports.
+It may take some time for the app to spin up. Once you see terminal messages that the containers are up, navigate to `http://localhost:3000` in your web browser to open the application's webpage.
 
-The app should launch in your web browser. If it doesn't, navigate to http://localhost:3000.
-
-The app will have been fully launched once its webpage opens in the browser.
+ALTERNATIVELY, you can run the `start.sh` shell script to start the web app without Docker. Run the command `bash start.sh` in the terminal to launch the shell script. If you are on Windows, you can use Git Bash to run shell scripts.
 
 
 ## 1. Cloning a Feast feature store GitHub repository
