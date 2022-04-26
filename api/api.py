@@ -14,7 +14,7 @@ import os
 app = FastAPI()
 
 # Defining allowed origins for CORS
-origins = ["http://localhost:3000", "http://localhost:5000"]
+origins = ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:3000", "http://127.0.0.1:5000"]
 
 # Adding CORS policy to the API
 app.add_middleware(
