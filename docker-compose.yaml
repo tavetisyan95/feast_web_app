@@ -6,16 +6,13 @@ services:
       args:
         NODE_ENV: production
     depends_on:
-      - flask
+      - fastapi
     ports:
       - "3000:3000"
     volumes:
       - /app/node_modules
 
-  flask:
+  fastapi:
     build: ./api
     ports:
       - "5000:80"
-    environment:
-      - FLASK_APP=app/mlflow_api.py
-      - "RUN=flask run --host=0.0.0.0 --port=80"

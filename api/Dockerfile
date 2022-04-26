@@ -1,16 +1,14 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.8
+FROM python:3.9
 
+WORKDIR /code
 
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+COPY ./requirements.txt /code/requirements.txt
 
-ENV STATIC_URL /static
-ENV STATIC_PATH /app/static
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-WORKDIR /app
-COPY mlflow_api.py .
-COPY parsers.py .
+COPY ./api.py /code/app/main.py
 
+RUN mkdir outputs
 RUN mkdir static
 
-CMD flask run --host=0.0.0.0 --port=80
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
