@@ -14,10 +14,7 @@ import os
 app = FastAPI()
 
 # Defining allowed origins for CORS
-origins = [
-    "http://localhost:3000",
-    "http://localhost:5000"
-    ]           
+origins = ["http://localhost:3000", "http://localhost:5000"]
 
 # Adding CORS policy to the API
 app.add_middleware(
@@ -25,7 +22,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_methods=["*"],
     allow_headers=["*"],
-    )
+)
 
 
 ### DATA MODELS FOR REQUEST BODIES ###
@@ -35,12 +32,14 @@ class GitRepo(BaseModel):
     repo_url: str
     to_path: str
 
+
 # Data model for creating entity DataFrames
 class EntityDF(BaseModel):
-    entity_keys: list[int] 
-    entity_name: str 
-    timestamps: list[str] 
+    entity_keys: list[int]
+    entity_name: str
+    timestamps: list[str]
     frequency: str
+
 
 # Data model for saving datasets
 class SaveDatasetInfo(BaseModel):
@@ -56,33 +55,34 @@ def clone_repo(repo_params: GitRepo):
     # Cloning the repo to a target path if it doesn't exist already
     if not os.path.exists(path="api/git_repos/" + repo_params.to_path):
         Repo.clone_from(
-            url=repo_params.repo_url, 
-            to_path="api/git_repos/" + repo_params.to_path
-            )                    
-    
+            url=repo_params.repo_url, to_path="api/git_repos/" + repo_params.to_path
+        )
+
     # Saving the target path for later use
     app.target_path = repo_params.to_path
 
 
 # Endpoint for getting the cloned feature store
 @app.post("/get_store")
-def get_store(path: str):       
-    # Getting the feature store    
-    app.store = FeatureStore(repo_path=os.getcwd() +"/api/git_repos/" + app.target_path + "/" + path)
+def get_store(path: str):
+    # Getting the feature store
+    app.store = FeatureStore(
+        repo_path=os.path.join(os.getcwd(), "api", "git_repos", app.target_path, path)
+    )
 
     # Saving the repo path for later use
     app.repo_path = path
 
-    # Changing the working directory to the path of the feature store    
-    os.chdir(f"api/git_repos/{app.target_path}/{path}")    
+    # Changing the working directory to the path of the feature store
+    os.chdir(f"api/git_repos/{app.target_path}/{path}")
 
-    # Updating feature store definitions 
+    # Updating feature store definitions
     # to update paths to data sources
     os.system("feast teardown")
     os.system("feast apply")
 
     # Going back to the original directory
-    os.chdir("../../../..")            
+    os.chdir("../../../..")
 
 
 # Endpoint for getting feature views
@@ -96,7 +96,7 @@ def get_feature_views():
 
     # Iterating over the feature views
     for feature_view in feature_views:
-        # Adding each feature view name 
+        # Adding each feature view name
         # to the list we created earlier
         feature_view_names.append(feature_view.name)
 
@@ -106,7 +106,7 @@ def get_feature_views():
 
 # Endpoint for getting feature names
 @app.get("/get_feature_names")
-def get_feature_names(feature_view_name: str):    
+def get_feature_names(feature_view_name: str):
     # Initializing a list for feature names
     feature_names = []
 
@@ -134,14 +134,11 @@ def get_entities():
         # Appending entity names and descriptions
         # to the lists created earlier
         entity_names.append(entity.name)
-        entity_descriptions.append(entity.description)  
+        entity_descriptions.append(entity.description)
 
     # Returning entity names and their descriptions
-    return {
-        "entity_names": entity_names, 
-        "entity_descriptions": entity_descriptions
-        }
-    
+    return {"entity_names": entity_names, "entity_descriptions": entity_descriptions}
+
 
 # Endpoint for registering entity DataFrames
 @app.post("/register_entity_df")
@@ -151,32 +148,26 @@ def register_entity_df(entity_df_params: EntityDF):
     timestamps = pd.date_range(
         start=entity_df_params.timestamps[0],
         end=entity_df_params.timestamps[1],
-        freq=entity_df_params.frequency
-    ).to_frame(
-        index=False, 
-        name="event_timestamp"
-        )
+        freq=entity_df_params.frequency,
+    ).to_frame(index=False, name="event_timestamp")
 
     # Creating a DataFrame with entity keys
     entity_ids = pd.DataFrame(
-        data=entity_df_params.entity_keys, 
-        columns=[entity_df_params.entity_name]
-        )
+        data=entity_df_params.entity_keys, columns=[entity_df_params.entity_name]
+    )
 
     # Merging the timestamps and entity key DataFrame
-    entity_df = timestamps.merge(
-        right=entity_ids, 
-        how="cross"
-        )
+    entity_df = timestamps.merge(right=entity_ids, how="cross")
 
     # Saving the entity DataFrame to the app
     app.entity_df = entity_df
 
-#ADD HTTPTOOLS, WEBSOCKETS
+
+# ADD HTTPTOOLS, WEBSOCKETS
 
 # Endpoint for saving datasets
 @app.post("/save_dataset")
-def save_dataset(dataset_info: SaveDatasetInfo): 
+def save_dataset(dataset_info: SaveDatasetInfo):
     # Initializing a list for feature names to retrieve
     features_to_get = []
 
@@ -187,18 +178,26 @@ def save_dataset(dataset_info: SaveDatasetInfo):
         for feature in app.store.get_feature_view(name=feature_view).features:
             features_to_get.append(feature_view + ":" + feature.name)
 
-    # Retrieving requested features from the feature store   
+    # Retrieving requested features from the feature store
     job = app.store.get_historical_features(
-        entity_df=app.entity_df,
-        features=features_to_get
-    )    
+        entity_df=app.entity_df, features=features_to_get
+    )
+
+    storage_path = os.path.join(
+        os.getcwd(),
+        "api",
+        "git_repos",
+        app.target_path,
+        app.repo_path,
+        "data",
+        f"{dataset_info.dataset_name}.parquet",
+    )
 
     # Storing the dataset locally on the server
     app.store.create_saved_dataset(
         from_=job,
         name=dataset_info.dataset_name,
-        storage=SavedDatasetFileStorage(
-            f"{os.getcwd()}/api/git_repos/{app.target_path}/{app.repo_path}/data/{dataset_info.dataset_name}.parquet")
+        storage=SavedDatasetFileStorage(storage_path),
     )
 
 
@@ -206,31 +205,19 @@ def save_dataset(dataset_info: SaveDatasetInfo):
 @app.post("/materialize")
 def materialize(start_date: str, end_date: str):
     # Converting string dates to datetimes
-    end_date = datetime.strptime(
-        end_date, 
-        "%Y-%m-%d"
-        )
+    end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
-    start_date = datetime.strptime(
-        start_date, 
-        "%Y-%m-%d"
-        )
+    start_date = datetime.strptime(start_date, "%Y-%m-%d")
 
     # Materializing features between given dates
-    app.store.materialize(
-        end_date=end_date, 
-        start_date=start_date
-        )
+    app.store.materialize(end_date=end_date, start_date=start_date)
 
 
 # Endpoint for incremental materializatioon
 @app.post("/materialize_incremental")
 def materialize_incremental(end_date: str):
     # Converting string date to datetime
-    end_date = datetime.strptime(
-        end_date, 
-        "%Y-%m-%d"
-        )
+    end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
     # Incrementally materializing features up to end date
     app.store.materialize_incremental(end_date=end_date)
@@ -238,8 +225,4 @@ def materialize_incremental(end_date: str):
 
 # Launching the API
 if __name__ == "__main__":
-    uvicorn.run(
-        app="api:app", 
-        port=5000, 
-        reload=False
-        )
+    uvicorn.run(app="api:app", port=5000, reload=False)
