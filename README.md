@@ -1,3 +1,5 @@
+This repository contains the project for the post [Creating a Feature Store with Feast Part 3: Building An API and React App for Feast](https://kedion.medium.com/feature-storage-for-ml-with-feast-a061899fc4a2) on the Kedion blog on Medium.
+
 ## Clone Project
 
 Clone the project:
